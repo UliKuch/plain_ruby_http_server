@@ -57,7 +57,7 @@ def main
 
       client.puts response(status: 200, headers: response_headers, body: response_body)
     when ["GET", "/time"]
-      response_headers = {"Content-Type" => "text/html"}
+      response_headers = {"Content-Type" => "text/plain"}
       response_body = "Time is #{Time.now}"
 
       client.puts response(status: 200, headers: response_headers, body: response_body)
