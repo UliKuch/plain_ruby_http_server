@@ -33,8 +33,12 @@ def main
     when ["GET", ""]
       response_headers = {"Content-Type" => "text/html"}
 
-      yaml = YAML.load(File.open("store.yml"))
-      message_history = format_message_history(yaml)
+      yaml = begin
+        YAML.load_file("store.yml")
+      rescue
+        nil
+      end
+      message_history = format_message_history(yaml) unless yaml.nil?
 
       response_body = <<~HTML
         <small>Your request was: #{request_line}</small>
