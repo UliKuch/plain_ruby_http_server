@@ -31,31 +31,34 @@ def main
     # routes
     case [method, path.chomp("/")]
     when ["GET", ""]
-      get_success(client)
+      response_headers = {"Content-Type" => "text/html"}
 
       yaml = YAML.load(File.open("store.yml"))
       message_history = format_message_history(yaml)
 
-      client.puts "<small>Your request was: #{request_line}</small>"
-      client.puts <<~TEXT
-      <h2>This is root</h2>
-      <h3>Here are some messages:</h3>
-      #{message_history}
-      <h3>Here is a form for you:</h3>
-      <form method="POST" enctype="application/x-www-form-urlencoded">
-        <label for="message">Some message:</label><br>
-        <input type="text" id="message" name="message"><br><br>
-        <label for="author">Author:</label><br>
-        <input type="text" id="author" name="author"><br><br>
-        <input type="submit" value="Submit"">
-      </form>
-      TEXT
+      response_body = <<~HTML
+        <small>Your request was: #{request_line}</small>
+        <h2>This is root</h2>
+        <h3>Here are some messages:</h3>
+        #{message_history}
+        <h3>Here is a form for you:</h3>
+        <form method="POST" enctype="application/x-www-form-urlencoded">
+          <label for="message">Some message:</label><br>
+          <input type="text" id="message" name="message"><br><br>
+          <label for="author">Author:</label><br>
+          <input type="text" id="author" name="author"><br><br>
+          <input type="submit" value="Submit"">
+        </form>
+      HTML
+
+      client.puts response(status: 200, headers: response_headers, body: response_body)
     when ["GET", "/time"]
-      get_success(client)
-      client.puts "Time is #{Time.now}"
+      response_headers = {"Content-Type" => "text/html"}
+      response_body = "Time is #{Time.now}"
+
+      client.puts response(status: 200, headers: response_headers, body: response_body)
     when ["POST", ""]
       if headers["Content-Type"] == "application/x-www-form-urlencoded"
-        post_success(client, location: "/")
         puts "Body: #{body}"
 
         params = parse_body(body)
@@ -68,39 +71,44 @@ def main
         store.transaction do
           store[Time.now] = {"author" => params["author"], "message" => params["message"]}
         end
+
+        response_headers = {"Location" => "/"}
+
+        client.puts response(status: 303, headers: response_headers)
       else
-        not_found(client)
-        client.puts "<p>Your request was: #{request_line}</p>"
-        client.puts "<p>Headers: #{headers}</p>"
-        client.puts "<p>Wrong/missing 'Content-Type' header: #{headers["Content-Type"]}</p>"
+        response_headers = {"Content-Type" => "text/html"}
+        response_body = <<~HTML
+          <p>Your request was: #{request_line}</p>
+          <p>Headers: #{headers}</p>
+          <p>Wrong/missing 'Content-Type' header: #{headers["Content-Type"]}</p>
+        HTML
+
+        client.puts response(status: 404, headers: response_headers, body: response_body)
       end
     else
-      not_found(client)
-      client.puts "<p>Your request was: #{request_line}</p>"
-      client.puts "<p>This endpoint does not seem to exist :/</p>"
+      response_headers = {"Content-Type" => "text/html"}
+      response_body = <<~HTML
+        <p>Your request was: #{request_line}</p>
+        <p>This endpoint does not seem to exist :/</p>
+      HTML
+
+      client.puts response(status: 404, headers: response_headers, body: response_body)
     end
 
-    puts ""
+    puts "" # newlines between requests in server console
     client.close
   end
 end
 
-def get_success(client)
-  client.puts "HTTP/1.1 200"
-  client.puts "Content-Type: text/html"
-  client.puts "" # newline between headers and body
-end
+def response(status:, headers:, body: nil)
+  response_string = "HTTP/1.1 #{status}\r\n"
+  headers.each do |k, v|
+    response_string << "#{k}: #{v}\r\n"
+  end
+  response_string << "\r\n"
+  response_string << body unless body.nil?
 
-def post_success(client, location:)
-  client.puts "HTTP/1.1 303"
-  client.puts "Location: #{location}"
-  client.puts "" # newline between headers and body
-end
-
-def not_found(client)
-  client.puts "HTTP/1.1 404"
-  client.puts "Content-Type: text/html"
-  client.puts "" # newline between headers and body
+  response_string
 end
 
 def parse_body(body)
