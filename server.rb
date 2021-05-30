@@ -2,6 +2,7 @@ require "socket"
 require "yaml/store"
 require "cgi"
 require_relative "responses.rb"
+require_relative "request.rb"
 
 class Server
   def start
@@ -9,39 +10,21 @@ class Server
 
     loop do
       client = server.accept
-
-      # TODO: instead: request = Request.new(request_line)
-
-      request = {}
-      request["request_line"] = client.gets.chomp("\r\n")
-      request["method"], request["full_path"], request["protocol"] = request["request_line"].split
-      request["path"], request["query"] = request["full_path"].split("?")
-      request["headers"] = {}
-
-      # get headers
-      while line = client.gets
-        break if line == "\r\n" # newline separates headers from body
-        header, content = line.split(": ", 2)
-        request["headers"][header] = content.chomp("\r\n")
-      end
-
-      # get body
-      body_length = request["headers"]["Content-Length"].to_i
-      request["body"] = client.read(body_length)
+      request = Request.new(client)
 
       # server console output
-      puts "Request received: #{request["request_line"]}"
-      puts "Request method is #{request["method"]}, full path is #{request["full_path"]} (path: #{request["path"]}, query: #{request["query"]}) and protocol is #{request["protocol"]}."
-      puts "Headers: #{request["headers"]}"
-      
+      puts "Request received: #{request.request_line}"
+      puts "Request method is #{request.method}, full path is #{request.full_path} (path: #{request.path}, query: #{request.query}) and protocol is #{request.protocol}."
+      puts "Headers: #{request.headers}"
+
       # routes
       response_class_matching = {
         "GET" => GetResponse,
         "POST" => PostResponse
       }
-      response_class = response_class_matching[request["method"]]
+      response_class = response_class_matching[request.method]
 
-      case request["path"].chomp("/")
+      case request.path.chomp("/")
       when "" # TODO specify GET and POST only
         # TODO: change signature to ...root.respond or ...respond(:root) ot sth like that
         # or: define private method like respond(:root) + instance variable to remove repetitive clutter

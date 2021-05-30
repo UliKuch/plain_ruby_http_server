@@ -35,7 +35,7 @@ class GetResponse < Response
     message_history = format_message_history(yaml) unless yaml.nil?
 
     body = <<~HTML
-      <small>Your request was: #{@request["request_line"]}</small>
+      <small>Your request was: #{@request.request_line}</small>
       <h2>This is root</h2>
       <h3>Here are some messages:</h3>
       #{message_history}
@@ -62,7 +62,7 @@ class GetResponse < Response
   def missing_endpoint
     headers = {"Content-Type" => "text/html"}
     body = <<~HTML
-      <p>Your request was: #{@request["request_line"]}</p>
+      <p>Your request was: #{@request.request_line}</p>
       <p>This endpoint does not seem to exist :/</p>
     HTML
 
@@ -85,10 +85,10 @@ end
 
 class PostResponse < Response
   def root
-    if @request["headers"]["Content-Type"] == "application/x-www-form-urlencoded"
-      puts "Body: #{@request["body"]}"
+    if @request.headers["Content-Type"] == "application/x-www-form-urlencoded"
+      puts "Body: #{@request.body}"
 
-      params = parse_body(@request["body"])
+      params = parse_body(@request.body)
 
       puts "Parameters: #{params}"
       puts "Message: #{params["message"]}"
@@ -105,9 +105,9 @@ class PostResponse < Response
     else
       headers = {"Content-Type" => "text/html"}
       body = <<~HTML
-        <p>Your request was: #{@request["request_line"]}</p>
-        <p>Headers: #{@request["headers"]}</p>
-        <p>Wrong/missing 'Content-Type' header: #{@request["headers"]["Content-Type"]}</p>
+        <p>Your request was: #{@request.request_line}</p>
+        <p>Headers: #{@request.headers}</p>
+        <p>Wrong/missing 'Content-Type' header: #{@request.headers["Content-Type"]}</p>
       HTML
 
       respond(status: 404, headers: headers, body: body)
