@@ -18,19 +18,15 @@ class Server
       puts "Headers: #{request.headers}"
 
       # routes
-      response_class_matching = {
-        "GET" => GetResponse,
-        "POST" => PostResponse
-      }
-      response_class = response_class_matching[request.method]
-
-      case request.path.chomp("/")
-      when "" # TODO specify GET and POST only
+      case [request.method, request.path.chomp("/")]
+      when ["GET", ""]
         # TODO: change signature to ...root.respond or ...respond(:root) ot sth like that
         # or: define private method like respond(:root) + instance variable to remove repetitive clutter
-        response_class.new(client, request).root
-      when "/time" # TODO: specify GET method only
-        response_class.new(client, request).time
+        GetResponse.new(client, request).root
+      when ["POST", ""]
+        PostResponse.new(client, request).root
+      when ["GET", "/time"]
+        GetResponse.new(client, request).time
       else
         GetResponse.new(client, request).missing_endpoint
       end
