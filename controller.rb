@@ -2,8 +2,7 @@ require "socket"
 require "yaml/store"
 require "cgi"
 
-# TODO: Controller instead of Response classes?
-class Response
+class Controller
   def initialize(client, request)
     @client = client
     @request = request
@@ -23,7 +22,8 @@ class Response
   end
 end
 
-class GetResponse < Response
+# TODO: find better way to structure controllers (not request methods)
+class GetController < Controller
   def root
     headers = {"Content-Type" => "text/html"}
 
@@ -83,7 +83,7 @@ class GetResponse < Response
   end
 end
 
-class PostResponse < Response
+class PostController < Controller
   def root
     if @request.headers["Content-Type"] == "application/x-www-form-urlencoded"
       puts "Body: #{@request.body}"
