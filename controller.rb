@@ -10,14 +10,14 @@ class Controller
   private
 
   def respond(status:, headers:, body: nil)
-    response_string = "HTTP/1.1 #{status}\r\n"
+    response = "HTTP/1.1 #{status}\r\n"
     headers.each do |k, v|
-      response_string << "#{k}: #{v}\r\n"
+      response << "#{k}: #{v}\r\n"
     end
-    response_string << "\r\n"
-    response_string << body unless body.nil?
+    response << "\r\n"
+    response << body unless body.nil?
 
-    @client.puts response_string
+    @client.puts response
   end
 
   def parse_body(body)
