@@ -42,8 +42,6 @@ class GetController < Controller
     body = <<~HTML
       <small>Your request was: #{@request.request_line}</small>
       <h2>This is root</h2>
-      <h3>Here are some messages:</h3>
-      #{message_history}
       <h3>Here is a form for you:</h3>
       <form method="POST" enctype="application/x-www-form-urlencoded">
         <label for="message">Some message:</label><br>
@@ -52,6 +50,8 @@ class GetController < Controller
         <input type="text" id="author" name="author"><br><br>
         <input type="submit" value="Submit"">
       </form>
+      <h3>Here are some messages:</h3>
+      #{message_history}
     HTML
 
     response(status: 200, headers: headers, body: body)
@@ -77,13 +77,13 @@ class GetController < Controller
   private
 
   def format_message_history(yaml)
-    yaml.map do |timestamp, content|
-      <<~TEXT
+    yaml.reverse_each.map do |timestamp, content|
+      <<~HTML
         <h4>#{timestamp}:</h4>
         <p>#{content["author"]} wrote:
         <br/>
         #{content["message"]}</p>
-      TEXT
+      HTML
     end.join("")
   end
 end
