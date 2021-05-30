@@ -1,10 +1,18 @@
 require "socket"
 require_relative "controller"
 require_relative "request"
+require_relative "router"
 
 class HttpServer
   def self.start
     server = TCPServer.new(3456)
+    # TODO: store routes somewhere else
+    # TODO: add some more (nested) routes
+    router = Router.new do
+      get "", controller: GetController, action: :root
+      post "", controller: PostController, action: :root
+      get "/time", controller: GetController # TODO: remove /
+    end
 
     loop do
       client = server.accept
@@ -16,17 +24,8 @@ class HttpServer
       puts "Headers: #{request.headers}"
       puts "Body: #{request.body}"
 
-      # routes
-      response = case [request.method, request.path.chomp("/")]
-      when ["GET", ""]
-        GetController.new(request).root
-      when ["POST", ""]
-        PostController.new(request).root
-      when ["GET", "/time"]
-        GetController.new(request).time
-      else
-        GetController.new(request).missing_endpoint
-      end
+      controller, action = router.route(request)
+      response = controller.new(request).send(action)
 
       client.puts response
 
