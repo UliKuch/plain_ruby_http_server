@@ -20,6 +20,15 @@ class Controller
 
     @client.puts response_string
   end
+
+  def parse_body(body)
+    # easier: Hash[URI.decode_www_form(body)]
+    body.split("&").each_with_object({}) do |string, hash|
+      k, v = string.split("=")
+      hash[k] = CGI.unescape(v)
+    end
+  end
+
 end
 
 # TODO: find better way to structure controllers (not request methods)
@@ -111,16 +120,6 @@ class PostController < Controller
       HTML
 
       respond(status: 404, headers: headers, body: body)
-    end
-  end
-
-  private
-
-  def parse_body(body)
-    # easier: Hash[URI.decode_www_form(body)]
-    body.split("&").each_with_object({}) do |string, hash|
-      k, v = string.split("=")
-      hash[k] = CGI.unescape(v)
     end
   end
 end
