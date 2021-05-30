@@ -1,6 +1,4 @@
 require "socket"
-require "yaml/store"
-require "cgi"
 require_relative "controller.rb"
 require_relative "request.rb"
 

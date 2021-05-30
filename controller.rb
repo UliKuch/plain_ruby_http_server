@@ -1,4 +1,3 @@
-require "socket"
 require "yaml/store"
 require "cgi"
 
@@ -28,7 +27,6 @@ class Controller
       hash[k] = CGI.unescape(v)
     end
   end
-
 end
 
 # TODO: find better way to structure controllers (not request methods)
