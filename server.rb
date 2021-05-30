@@ -1,6 +1,6 @@
 require "socket"
-require_relative "controller.rb"
-require_relative "request.rb"
+require_relative "controller"
+require_relative "request"
 
 class HttpServer
   def self.start

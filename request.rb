@@ -20,7 +20,7 @@ class Request
 
   def read_headers
     headers = {}
-    while line = @client.gets
+    while (line = @client.gets)
       break if line == "\r\n" # newline separates headers from body
       header, content = line.split(": ", 2)
       headers[header] = content.chomp("\r\n")

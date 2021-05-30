@@ -79,10 +79,10 @@ class GetController < Controller
   def format_message_history(yaml)
     yaml.map do |timestamp, content|
       <<~TEXT
-      <h4>#{timestamp}:</h4>
-      <p>#{content["author"]} wrote:
-      <br/>
-      #{content["message"]}</p>
+        <h4>#{timestamp}:</h4>
+        <p>#{content["author"]} wrote:
+        <br/>
+        #{content["message"]}</p>
       TEXT
     end.join("")
   end
