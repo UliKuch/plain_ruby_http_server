@@ -5,7 +5,7 @@ require_relative "controller.rb"
 require_relative "request.rb"
 
 class Server
-  def start
+  def self.start
     server = TCPServer.new(3456)
 
     loop do
@@ -35,7 +35,7 @@ class Server
   end
 end
 
-Server.new.start
+Server.start
 
 # TODO: rack app? see e.g.:
 # https://blog.appsignal.com/2016/11/23/ruby-magic-building-a-30-line-http-server-in-ruby.html
