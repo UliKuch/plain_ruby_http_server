@@ -16,16 +16,18 @@ class HttpServer
       puts "Headers: #{request.headers}"
 
       # routes
-      case [request.method, request.path.chomp("/")]
+      response = case [request.method, request.path.chomp("/")]
       when ["GET", ""]
-        GetController.new(client, request).root
+        GetController.new(request).root
       when ["POST", ""]
-        PostController.new(client, request).root
+        PostController.new(request).root
       when ["GET", "/time"]
-        GetController.new(client, request).time
+        GetController.new(request).time
       else
-        GetController.new(client, request).missing_endpoint
+        GetController.new(request).missing_endpoint
       end
+
+      client.puts response
 
       puts "" # newlines between requests in server console
       client.close

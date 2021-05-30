@@ -2,22 +2,20 @@ require "yaml/store"
 require "cgi"
 
 class Controller
-  def initialize(client, request)
-    @client = client
+  def initialize(request)
     @request = request
   end
 
   private
 
-  def respond(status:, headers:, body: nil)
-    response = "HTTP/1.1 #{status}\r\n"
+  def response(status:, headers:, body: nil)
+    result = "HTTP/1.1 #{status}\r\n"
     headers.each do |k, v|
-      response << "#{k}: #{v}\r\n"
+      result << "#{k}: #{v}\r\n"
     end
-    response << "\r\n"
-    response << body unless body.nil?
-
-    @client.puts response
+    result << "\r\n"
+    result << body unless body.nil?
+    result
   end
 
   def parse_body(body)
@@ -56,14 +54,14 @@ class GetController < Controller
       </form>
     HTML
 
-    respond(status: 200, headers: headers, body: body)
+    response(status: 200, headers: headers, body: body)
   end
 
   def time
     headers = {"Content-Type" => "text/plain"}
     body = "Time is #{Time.now}"
 
-    respond(status: 200, headers: headers, body: body)
+    response(status: 200, headers: headers, body: body)
   end
 
   def missing_endpoint
@@ -73,7 +71,7 @@ class GetController < Controller
       <p>This endpoint does not seem to exist :/</p>
     HTML
 
-    respond(status: 404, headers: headers, body: body)
+    response(status: 404, headers: headers, body: body)
   end
 
   private
@@ -108,7 +106,7 @@ class PostController < Controller
 
       headers = {"Location" => "/"}
 
-      respond(status: 303, headers: headers)
+      response(status: 303, headers: headers)
     else
       headers = {"Content-Type" => "text/html"}
       body = <<~HTML
@@ -117,7 +115,7 @@ class PostController < Controller
         <p>Wrong/missing 'Content-Type' header: #{@request.headers["Content-Type"]}</p>
       HTML
 
-      respond(status: 404, headers: headers, body: body)
+      response(status: 404, headers: headers, body: body)
     end
   end
 end
