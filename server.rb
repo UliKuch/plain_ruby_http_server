@@ -14,6 +14,7 @@ class HttpServer
       puts "Request received: #{request.request_line}"
       puts "Request method is #{request.method}, full path is #{request.full_path} (path: #{request.path}, query: #{request.query}) and protocol is #{request.protocol}."
       puts "Headers: #{request.headers}"
+      puts "Body: #{request.body}"
 
       # routes
       response = case [request.method, request.path.chomp("/")]

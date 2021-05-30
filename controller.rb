@@ -91,13 +91,10 @@ end
 class PostController < Controller
   def root
     if @request.headers["Content-Type"] == "application/x-www-form-urlencoded"
-      puts "Body: #{@request.body}"
-
       params = parse_body(@request.body)
 
+      # server console output
       puts "Parameters: #{params}"
-      puts "Message: #{params["message"]}"
-      puts "Author: #{params["author"]}"
 
       store = YAML::Store.new "store.yml"
       store.transaction do
