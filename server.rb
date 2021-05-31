@@ -25,7 +25,10 @@ class HttpServer
         puts "Headers: #{request.headers}"
         puts "Body: #{request.body}"
 
-        controller, action = router.route(request)
+        case router.route(request)
+          in {controller:, action:}
+        end
+
         response = controller.new(request).send(action)
 
         client.puts response

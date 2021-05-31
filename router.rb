@@ -11,8 +11,7 @@ class Router
   def route(request)
     method = request.method
     path = request.path.chomp("/")
-    target = routes_hash.dig(path, method) || NOT_FOUND
-    [target[:controller], target[:action]]
+    routes_hash.dig(path, method) || NOT_FOUND
   end
 
   private
@@ -21,7 +20,7 @@ class Router
   [:get, :post, :put, :patch, :delete].each do |method|
     define_method(method) do |route_name, controller:, action: nil|
       default_or_custom_action = action.nil? ? route_name.split("/").last : action
-      # TODO: add some default controller name (and channeg current controller names)
+      # TODO: add some default controller name (and change current controller names)
 
       add_route(
         route_name,
