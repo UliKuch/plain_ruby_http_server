@@ -15,22 +15,24 @@ class HttpServer
     end
 
     loop do
-      client = server.accept
-      request = Request.new(client)
+      Thread.new(server.accept) do |client|
+        # TODO: return 400 Bad Request when request cannot be parsed
+        request = Request.new(client)
 
-      # server console output
-      puts "Request received: #{request.request_line}"
-      puts "Request method is #{request.method}, full path is #{request.full_path} (path: #{request.path}, query: #{request.query}) and protocol is #{request.protocol}."
-      puts "Headers: #{request.headers}"
-      puts "Body: #{request.body}"
+        # server console output
+        puts "Request received: #{request.request_line}"
+        puts "Request method is #{request.method}, full path is #{request.full_path} (path: #{request.path}, query: #{request.query}) and protocol is #{request.protocol}."
+        puts "Headers: #{request.headers}"
+        puts "Body: #{request.body}"
 
-      controller, action = router.route(request)
-      response = controller.new(request).send(action)
+        controller, action = router.route(request)
+        response = controller.new(request).send(action)
 
-      client.puts response
+        client.puts response
 
-      puts "" # newlines between requests in server console
-      client.close
+        puts "" # newlines between requests in server console
+        client.close
+      end
     end
   end
 end
