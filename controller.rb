@@ -74,6 +74,15 @@ class GetController < Controller
     response(status: 404, headers: headers, body: body)
   end
 
+  def bad_request
+    headers = {"Content-Type" => "text/html"}
+    body = <<~HTML
+      <h1>Bad Request</h1>
+    HTML
+
+    response(status: 400, headers: headers, body: body)
+  end
+
   private
 
   def format_message_history(yaml)

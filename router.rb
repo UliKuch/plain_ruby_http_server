@@ -1,7 +1,9 @@
 class Router
   attr_accessor :routes_hash
 
+  # TODO: Use specific ErrorController?
   NOT_FOUND = {controller: GetController, action: :missing_endpoint}
+  BAD_REQUEST = {controller: GetController, action: :bad_request}
 
   def initialize(&block)
     @routes_hash = {}
@@ -10,7 +12,10 @@ class Router
 
   def route(request)
     method = request.method
-    path = request.path.chomp("/")
+    path = request.path&.chomp("/")
+
+    return BAD_REQUEST if method.nil? || path.nil?
+
     routes_hash.dig(path, method) || NOT_FOUND
   end
 
