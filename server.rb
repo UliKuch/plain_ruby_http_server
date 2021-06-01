@@ -23,7 +23,7 @@ class HttpServer
         end
 
         response = controller.new(request).send(action)
-        client.puts response
+        client.puts response.to_s
 
         puts "" # newlines between requests in server console
         client.close

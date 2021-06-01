@@ -1,5 +1,6 @@
 require "yaml/store"
 require "cgi"
+require_relative "response"
 
 class Controller
   def initialize(request)
@@ -8,16 +9,7 @@ class Controller
 
   private
 
-  def response(status:, headers:, body: nil)
-    result = "HTTP/1.1 #{status}\r\n"
-    headers.each do |k, v|
-      result << "#{k}: #{v}\r\n"
-    end
-    result << "\r\n"
-    result << body unless body.nil?
-    result
-  end
-
+  # TODO: Maybe add this to request object?
   def parse_body(body)
     # easier: Hash[URI.decode_www_form(body)]
     body.split("&").each_with_object({}) do |string, hash|
@@ -54,14 +46,14 @@ class GetController < Controller
       #{message_history}
     HTML
 
-    response(status: 200, headers: headers, body: body)
+    Response.new(status: 200, headers: headers, body: body)
   end
 
   def time
     headers = {"Content-Type" => "text/plain"}
     body = "Time is #{Time.now}"
 
-    response(status: 200, headers: headers, body: body)
+    Response.new(status: 200, headers: headers, body: body)
   end
 
   def missing_endpoint
@@ -71,7 +63,7 @@ class GetController < Controller
       <p>This endpoint does not seem to exist :/</p>
     HTML
 
-    response(status: 404, headers: headers, body: body)
+    Response.new(status: 404, headers: headers, body: body)
   end
 
   def bad_request
@@ -80,7 +72,7 @@ class GetController < Controller
       <h1>Bad Request</h1>
     HTML
 
-    response(status: 400, headers: headers, body: body)
+    Response.new(status: 400, headers: headers, body: body)
   end
 
   private
@@ -112,7 +104,7 @@ class PostController < Controller
 
       headers = {"Location" => "/"}
 
-      response(status: 303, headers: headers)
+      Response.new(status: 303, headers: headers)
     else
       headers = {"Content-Type" => "text/html"}
       body = <<~HTML
@@ -121,7 +113,7 @@ class PostController < Controller
         <p>Wrong/missing 'Content-Type' header: #{@request.headers["Content-Type"]}</p>
       HTML
 
-      response(status: 404, headers: headers, body: body)
+      Response.new(status: 404, headers: headers, body: body)
     end
   end
 end
