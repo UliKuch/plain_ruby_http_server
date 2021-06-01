@@ -25,7 +25,10 @@ class HttpServer
         response = controller.new(request).send(action)
         client.puts response.to_s
 
+        puts "Responded with status code: #{response.status}"
+        puts "Response headers: #{response.headers}"
         puts "" # newlines between requests in server console
+
         client.close
       end
     end
