@@ -7,17 +7,17 @@ class Request
 
   def read
     @request_line = read_request_line
-    puts "Request received: #{request_line}"
+    puts "Request received: #{request_line.inspect}"
 
     @method, @full_path, @protocol = request_line.split
     @path, @query = full_path.split("?")
-    puts "Request method is #{method}, full path is #{full_path} (path: #{path}, query: #{query}) and protocol is #{protocol}."
+    puts "Request method is #{method.inspect}, full path is #{full_path.inspect} (path: #{path.inspect}, query: #{query.inspect}) and protocol is #{protocol.inspect}."
 
     @headers = read_headers
     puts "Headers: #{headers}"
 
     @body = read_body
-    puts "Body: #{body}"
+    puts "Body: #{body.inspect}"
 
     self
   rescue => error
