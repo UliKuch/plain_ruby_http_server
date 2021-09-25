@@ -5,9 +5,11 @@ require_relative "router"
 require_relative "config/routes"
 
 class HttpServer
+  DEFAULT_PORT = 3456
+
   def self.start
     config = YAML.load_file("config/config.yml")
-    server = TCPServer.new(config["port"])
+    server = TCPServer.new(config["port"] || DEFAULT_PORT)
 
     loop do
       Thread.new(server.accept) do |client|
