@@ -4,6 +4,22 @@ class Controller
   def initialize(request)
     @request = request
   end
+
+  private
+
+  def response_body_from_view(path: nil, filename: nil)
+    # TODO: use proper snake_case instead of downcase
+    relative_path = if path.nil?
+      "views/" + self.class.to_s.chomp("Controller").downcase
+    else
+      path
+    end
+
+    # read calling method's name if filename not specified
+    name = filename.nil? ? caller_locations.first.base_label : filename
+
+    eval(File.open("app/#{relative_path}/#{name}.rb").read)
+  end
 end
 
 class ErrorController < Controller
