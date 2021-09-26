@@ -11,7 +11,9 @@ class HttpServer
 
   def self.start
     config = YAML.load_file("config/config.yml")
-    server = TCPServer.new(config["port"] || DEFAULT_PORT)
+    port = config["port"]
+    server = TCPServer.new(port || DEFAULT_PORT)
+    puts "Server running on http://localhost:#{port}", ""
 
     loop do
       Thread.new(server.accept) do |client|
