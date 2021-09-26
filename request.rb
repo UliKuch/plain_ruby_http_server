@@ -28,6 +28,14 @@ class Request
     self
   end
 
+  def params
+    # easier: Hash[URI.decode_www_form(body)]
+    @body.split("&").each_with_object({}) do |string, hash|
+      k, v = string.split("=")
+      hash[k] = CGI.unescape(v)
+    end
+  end
+
   private
 
   def read_request_line

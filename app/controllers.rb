@@ -54,7 +54,7 @@ end
 class PostController < Controller
   def root
     if @request.headers["Content-Type"] == "application/x-www-form-urlencoded"
-      params = parse_body(@request.body)
+      params = @request.params
 
       # server console output
       puts "Parameters: #{params}"

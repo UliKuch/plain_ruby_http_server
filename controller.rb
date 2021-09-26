@@ -4,17 +4,6 @@ class Controller
   def initialize(request)
     @request = request
   end
-
-  private
-
-  # TODO: Maybe add this to request object?
-  def parse_body(body)
-    # easier: Hash[URI.decode_www_form(body)]
-    body.split("&").each_with_object({}) do |string, hash|
-      k, v = string.split("=")
-      hash[k] = CGI.unescape(v)
-    end
-  end
 end
 
 class ErrorController < Controller
