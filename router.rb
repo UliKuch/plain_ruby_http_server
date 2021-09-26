@@ -1,7 +1,7 @@
 class Router
   # TODO: Use specific ErrorController?
-  NOT_FOUND = {controller: GetController, action: :missing_endpoint}
-  BAD_REQUEST = {controller: GetController, action: :bad_request}
+  NOT_FOUND = {controller: ErrorController, action: :missing_endpoint}
+  BAD_REQUEST = {controller: ErrorController, action: :bad_request}
 
   class << self
     def config(&block)

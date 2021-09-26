@@ -1,5 +1,7 @@
 require "socket"
+require_relative "response"
 require_relative "controller"
+require_relative "app/controllers"
 require_relative "request"
 require_relative "router"
 require_relative "config/routes"
