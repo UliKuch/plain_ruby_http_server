@@ -5,7 +5,7 @@ class Router
 
   class << self
     def config(&block)
-      @@routes_hash = {}
+      @routes_hash = {}
       instance_eval(&block)
     end
 
@@ -15,7 +15,7 @@ class Router
 
       return BAD_REQUEST if method.nil? || path.nil?
 
-      @@routes_hash.dig(path, method) || NOT_FOUND
+      @routes_hash.dig(path, method) || NOT_FOUND
     end
 
     private
@@ -57,8 +57,8 @@ class Router
     def add_route(route_name, controller:, action:, method:)
       # TODO: split("/") nested routes
 
-      @@routes_hash[route_name] ||= {}
-      @@routes_hash[route_name][method] = {controller: controller, action: action}
+      @routes_hash[route_name] ||= {}
+      @routes_hash[route_name][method] = {controller: controller, action: action}
     end
   end
 end
